@@ -2,6 +2,8 @@
 # to the configuration of the whole program
 class Configuration:
     def __init__(self):
+        self.pomodoro_duration
+
         # See the functionalities section in the architecture document
         # to see what variables should be present in this class
         # (i.e. what the user can configure)
