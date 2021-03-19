@@ -11,7 +11,7 @@ class Listener:
 
     def listen(self) -> str:
         with self.mic as mic:
-            audio = self.rec.listen(mic, )
+            audio = self.rec.listen(mic, phrase_time_limit=5)
             try:
                 # Possibility to run "show_all=True" for possible alternatives
                 t_audio = self.rec.recognize_google(audio, language='en')

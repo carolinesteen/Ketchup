@@ -1,12 +1,8 @@
 import traceback
 
 from ketchup_core.orchestrator import KetchupOrchestrator
-from ketchup_core.pomodoro import Pomodoro
 
 if __name__ == '__main__':
-    pom = Pomodoro()
-    pom.start()
-'''
     try:
         app = KetchupOrchestrator()
     except Exception as ex:
@@ -18,7 +14,8 @@ if __name__ == '__main__':
     else:
         try:
             app.run()
-        except Exception:
+        except Exception as ex:
+            # TODO
             print("Exception happened:")
+            print(ex)
             traceback.print_exc()
-'''
