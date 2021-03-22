@@ -11,13 +11,16 @@ class Listener:
 
     def listen(self) -> str:
         with self.mic as mic:
-            audio = self.rec.listen(mic, phrase_time_limit=5)
+            self.prep()
             try:
+                audio = self.rec.listen(mic, timeout=1, phrase_time_limit=2)
                 # Possibility to run "show_all=True" for possible alternatives
                 t_audio = self.rec.recognize_google(audio, language='en')
                 print(t_audio)
-            except sr.UnknownValueError:
+            except sr.UnknownValueError as ex:
                 t_audio = ""  # This is noise
+            except sr.WaitTimeoutError as ex:
+                t_audio = ""
             except sr.RequestError:
                 # Internet is down or it failed. What to do?
                 pass

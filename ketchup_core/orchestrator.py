@@ -33,7 +33,8 @@ class KetchupOrchestrator:
             "pause": self.pause_pomodoro,
             "resume": self.resume_pomodoro,
             "stop": self.stop_pomodoro,
-            "progress": self.give_update
+            "update": self.give_update,
+            "help": self.give_help
         }
         self.alert_list = ["hey ketchup", "he catch up", "hey catch up", "he ketchup",
                            "hey petal", "haircut up", "hey get up", "he kept up"]
@@ -51,8 +52,9 @@ class KetchupOrchestrator:
         self.speaker.say(args)
 
     def no_command(self, command):
-        self.speaker.say("Sorry, I don't recognise the command " + command)
-        self.speaker.say("Repeat it")
+        if command != "":
+            self.speaker.say("Sorry, I don't recognise the command " + command)
+            self.speaker.say("Please, repeat")
         self.receptive = True
 
     def nothing(self, args):
@@ -63,7 +65,7 @@ class KetchupOrchestrator:
             self.speaker.say("There is already a pomodoro running!")
         else:
             self.speaker.say("Sure, starting now!")
-            self.current_pomodoro = Pomodoro(self.notify, self.message_queue)
+            self.current_pomodoro = Pomodoro(self.message_queue)
             self.current_pomodoro.start()
         self.give_update(args)
 
@@ -91,10 +93,10 @@ class KetchupOrchestrator:
         p_left = self.current_pomodoro.pomodoro_left()
         p_total = self.current_pomodoro.pomodoro_total()
         stage = int(p_left*5/p_total)
-        if stage < 3:  # This is doubtful as it doesn't work very good with <5 pomodoros
+        if stage > 3:  # This is doubtful as it doesn't work very good with <5 pomodoros
             adv = "still"
             motiv = ". We're only getting started!"
-        elif stage > 3:
+        elif stage < 3:
             adv = "only"
             motiv = ". We're almost done!"
         else:
@@ -102,6 +104,18 @@ class KetchupOrchestrator:
             motiv = ". We're halfway through!"
         message += "You " + adv + "have " + str(p_left) + " pomodoros left out of " + str(p_total) + motiv
         self.speaker.say(message)
+
+    def give_help(self, args):
+        msg = "I am Ketchup, your pomodoro assistant, I'm here to make your days more productive!"
+        msg += "To tell me something, first attract my attention by saying hey ketchup. I won't listen otherwise."
+        msg += "Once you have my attention, you can start a pomodoro session by telling me to start"
+        msg += "By default a session consists of four productive intervals, the pomodoros, each lasting 25 minutes." \
+               "Between each interval, you will take a short break of 5 minutes."\
+               "After each third pomodoro, you'll have a long 30 minutes break."
+        msg += "You can pause or resume the session anytime. Also, you can ask for an update on what is going on."
+        msg += "You can exit the application by saying exit"
+
+        self.speaker.say(msg)
 
     def notify(self):
         if self.message_queue.empty():
@@ -119,7 +133,7 @@ class KetchupOrchestrator:
 
     def run(self):
         parser = Parser()
-        self.speaker.say("Hi! Welcome to Ketchup. Say hey ketchup to attract my attention.")
+        self.speaker.say("Hi, I'm Ketchup. Say hey ketchup to attract my attention. Say help to have more information.")
 
         while self.is_running:
             inp = self.listener.listen()
@@ -136,16 +150,5 @@ class KetchupOrchestrator:
                 self.receptive = True
             self.notify()
 
-        # Usually a loop goes like this:
-        # 1. Initialize whatever needed (e.g. listeners objects)
-        # 2. Listen to (user) input
-        # 3. Parse input (i.e. decide what to do based on input)
-        # 4. Execute associated function
-        #    self._current_pomodoro = Pomodoro(self.config)
-        #    self._current_pomodoro.start()
-        #   where are these functions stored?
-        #   how are they selected?
-        #   where are they implemented?
-        # 5. Provide output
-        # 6. Go to 2, unless some (exit) condition is met
-        # These steps usually need to be guarded for exceptions (try-except)
+        if self.current_pomodoro:
+            self.current_pomodoro.do_kill()
