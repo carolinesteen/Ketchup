@@ -106,6 +106,7 @@ class KetchupOrchestrator:
                "Between each interval, you will take a short break of 5 minutes."\
                "After each third pomodoro, you'll have a long 30 minutes break."
         msg += "You can pause or resume the session anytime. Also, you can ask for an update on what is going on."
+        msg += "You can also ask me for motivational quotes by saying, motivation."
         msg += "You can exit the application by saying exit"
 
         self.speaker.say(msg)
