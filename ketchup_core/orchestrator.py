@@ -2,6 +2,7 @@ from ketchup_ui.user_in import Listener
 from ketchup_ui.user_out import Speaker
 from ketchup_ui.parser import Parser
 from ketchup_core.pomodoro import Pomodoro
+from ketchup_core.motivator import Motivator
 import queue
 
 
@@ -10,19 +11,10 @@ import queue
 # other components and mediating the interaction among them
 class KetchupOrchestrator:
     def __init__(self):
-        # Do some initialization
-        # 1. What are the components that this class should store?
-        #    Create them as self.component
-        #    These are usually components that store a *state*,
-        #    that is, something that needs to be remembered
-        #    (e.g. the progress of the pomodoro), or that it's
-        #    too cumbersome to load every time (e.g. sentences)
-        # 2. What things should be instead processed and then let go?
-
-        # E.g.:
         self.current_pomodoro = None
         self.speaker = Speaker()
         self.listener = Listener()
+        self.motivator = Motivator()
         self.receptive = False
         self.is_running = True
         self.commands = {
@@ -34,7 +26,8 @@ class KetchupOrchestrator:
             "resume": self.resume_pomodoro,
             "stop": self.stop_pomodoro,
             "update": self.give_update,
-            "help": self.give_help
+            "help": self.give_help,
+            "motivate": self.motivate
         }
         self.alert_list = ["hey ketchup", "he catch up", "hey catch up", "he ketchup",
                            "hey petal", "haircut up", "hey get up", "he kept up"]
@@ -130,6 +123,9 @@ class KetchupOrchestrator:
         else:
             self.speaker.say("Break is over! Come on, back to work!")
         self.speaker.say("You have " + str(int(time_left.seconds/60)) + " minutes left")
+
+    def motivate(self, args):
+        self.speaker.say(self.motivator.answer(args))
 
     def run(self):
         parser = Parser()
